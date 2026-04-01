@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  COUNSELOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum InterventionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  MISSED
+}
+
+model User {
+  id                      String                  @id @default(uuid())
+  name                    String
+  email                   String                  @unique
+  password                String
+  role                    Role                    @default(STUDENT)
+  rollNumber              String?                 @unique
+  department              String?
+  year                    String?
+  phone                   String?
+  gender                  String?
+  createdAt               DateTime                @default(now())
+  
+  // Relations
+  wellnessSurveys         WellnessSurvey[]
+  recommendations         Recommendation[]
+  interventionsAssignedTo Intervention[]          @relation("AssignedToStudent")
+  interventionsAssignedBy Intervention[]          @relation("AssignedByFaculty")
+  interventionResponses   InterventionResponse[]
+  appointmentsAsStudent   CounselingAppointment[] @relation("AppointmentStudent")
+  appointmentsAsCounselor CounselingAppointment[] @relation("AppointmentCounselor")
+  notifications           Notification[]
+  focusTasks             FocusTask[]
+  goalHabits             GoalHabit[]
+  supportTickets         SupportTicket[]
+  systemNotifications    SystemNotification[] @relation("StudentNotifications")
+  facultyFeedback        FacultyFeedback?
+}
+
+model WellnessSurvey {
+  id               String   @id @default(uuid())
+  studentId        String
+  student          User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  stressLevel      Int
+  sleepQuality     Int
+  mood             String
+  academicPressure Int
+  date             DateTime @default(now())
+  riskScore        Int?     // Calculated 0-100 or specific risk levels
+}
+
+model Recommendation {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  category    String
+  createdBy   String   // Could be "AI" or Faculty ID
+  createdAt   DateTime @default(now())
+}
+
+model Intervention {
+  id           String             @id @default(uuid())
+  studentId    String
+  student      User               @relation("AssignedToStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  strategy     String
+  description  String
+  assignedById String
+  assignedBy   User               @relation("AssignedByFaculty", fields: [assignedById], references: [id])
+  assignedDate DateTime           @default(now())
+  status       InterventionStatus @default(NOT_STARTED)
+
+  responses InterventionResponse[]
+}
+
+model InterventionResponse {
+  id             String       @id @default(uuid())
+  interventionId String
+  intervention   Intervention @relation(fields: [interventionId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        User         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status         String?      // COMPLETED, MISSED
+  missedReason   String?
+  stressBefore   Int?
+  stressAfter    Int?
+  feedback       String?
+  rating         Int?
+  helpful        String?      // For breathing/meditation
+  issueResolved  String?      // For counseling
+  createdAt      DateTime     @default(now())
+}
+
+model FocusTask {
+  id        String   @id @default(uuid())
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  text      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model GoalHabit {
+  id            String   @id @default(uuid())
+  studentId     String
+  student       User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name          String
+  category      String
+  completedDays Json     // Stores array of 7 booleans [true, false, ...]
+  streak        Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model CounselingAppointment {
+  id          String            @id @default(uuid())
+  studentId   String
+  student     User              @relation("AppointmentStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  counselorId String
+  counselor   User              @relation("AppointmentCounselor", fields: [counselorId], references: [id])
+  date        DateTime
+  time        String
+  status      AppointmentStatus @default(SCHEDULED)
+  feedback    String?
+  rating      Int?
+  notes       String?
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CommunityPost {
+  id          String             @id @default(uuid())
+  category    String
+  content     String
+  authorAlias String
+  likes       Int                @default(0)
+  timestamp   DateTime           @default(now())
+  comments    CommunityComment[]
+}
+
+model CommunityComment {
+  id          String        @id @default(uuid())
+  postId      String
+  post        CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  content     String
+  authorAlias String
+  timestamp   DateTime      @default(now())
+}
+
+model SupportTicket {
+  id                String   @id @default(uuid())
+  studentId         String
+  student           User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  requestDate       DateTime @default(now())
+  status            String   // PENDING, ACCEPTED, RESOLVED
+  facultyResponse   String?
+  timestamp         DateTime @default(now())
+}
+
+model SystemNotification {
+  id                String   @id @default(uuid())
+  studentId         String
+  student           User     @relation("StudentNotifications", fields: [studentId], references: [id], onDelete: Cascade)
+  message           String
+  type              String   // REMINDER, ALERT, INFO
+  isRead            Boolean  @default(false)
+  date              DateTime @default(now())
+}
+
+model FacultyFeedback {
+  id                String   @id @default(uuid())
+  studentId         String   @unique
+  student           User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status            String
+  recommendation    String?
+  strategy          String?
+  facultyNotes      String?
+  lastUpdated       DateTime @default(now())
+  assignedBy        String
+  counselingDetails Json?
+  resolutionDate    String?
+}

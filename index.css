@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --primary-glow: conic-gradient(from 180deg at 50% 50%, #2a8af633 0deg, #a853ba33 180deg, #e92a6733 360deg);
+  --secondary-glow: radial-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  background-color: #f8fafc; /* Tailwind slate-50 */
+  color: #0f172a; /* Tailwind slate-900 */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+.glass-dark {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+}
+
+/* Text Gradients */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to right, #4f46e5, #9333ea, #e11d48);
+}
+
+/* Subtle Glow on Hover */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Animated Background Blob */
+.bg-blob {
+  position: absolute;
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.5;
+  animation: float 10s infinite ease-in-out alternate;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.05); }
+  100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* Form Improvents */
+.input-focus-ring:focus-within {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+  border-color: #6366f1;
+}
+
+/* Utility Animations */
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Global Dark Mode Overrides --- */
+.dark body {
+  background-color: #0f172a; 
+  color: #f8fafc; 
+}
+
+/* Base Card and Container Backgrounds */
+.dark .bg-white, .dark .bg-surface-50, .dark .bg-gray-50, .dark .bg-slate-50 {
+  background-color: #1e293b !important; 
+  border-color: #334155 !important; 
+  color: #f1f5f9 !important;
+}
+
+/* Specific component backgrounds / overrides that need slightly different shades */
+.dark .bg-primary-50, .dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+  color: #e0e7ff !important;
+}
+
+.dark .bg-green-50, .dark .bg-teal-50, .dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.dark .bg-red-50, .dark .bg-orange-50 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Borders */
+.dark .border-gray-100, .dark .border-slate-200, .dark .border-gray-200, .dark .border-white\/50, .dark .border-surface-100\/50, .dark .border-indigo-100 {
+  border-color: #334155 !important;
+}
+
+/* Typography Overrides */
+.dark .text-slate-800, .dark .text-slate-700, .dark .text-surface-900, .dark h1, .dark h2, .dark h3 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-600, .dark .text-slate-500, .dark .text-surface-500, .dark .text-gray-500, .dark p {
+  color: #cbd5e1 !important;
+}
+
+/* Interactive Elements (Inputs, Selects, Textareas) */
+.dark input, .dark select, .dark textarea {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input:focus, .dark select:focus, .dark textarea:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Recharts Overrides */
+.dark .recharts-cartesian-grid-horizontal line, .dark .recharts-cartesian-grid-vertical line {
+  stroke: #334155;
+}
+.dark .recharts-text, .dark .recharts-label {
+  fill: #cbd5e1;
+}
+
+/* Glassmorphism & Translucents */
+.dark .glass-card, .dark .bg-white\/70, .dark .bg-white\/90, .dark .bg-white\/80 {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark .from-white\/90 {
+  --tw-gradient-from: rgba(30, 41, 59, 0.9) var(--tw-gradient-from-position) !important;
+}
+
+/* Exclude specific buttons from text color override */
+.dark button.bg-indigo-600, .dark button.bg-primary-600, .dark button.bg-primary-500, .dark .text-white {
+  color: #ffffff !important;
+}
